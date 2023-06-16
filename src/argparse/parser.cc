@@ -109,7 +109,7 @@ bool parser::parse(std::vector<std::string> args)
             else
             {
                 i++;
-                if (i >= args.size())
+                if (i >= args.size() || args[i][0] == '-')
                 {
                     std::cerr << "error: parameter " << current << " requires a value" << std::endl;
                     return false;
