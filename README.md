@@ -20,4 +20,6 @@ For Linux/MSYS2, the following commands can be used to compile the library:
 
 For other platforms, the library can be compiled using CMake and corresponding build system.
 
+## Usage
+See main.cc in scatk[https://github.com/helium729/scatk] as an example.
 
