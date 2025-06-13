@@ -1,9 +1,12 @@
 #include "argparse/parser.h"
+#include <iostream>
+#include <cstdlib>
 
 using namespace argparse;
 
 parser::parser()
 {
+    auto_help_enabled = true; // Enable auto-help by default
 }
 
 parser::~parser()
@@ -99,6 +102,10 @@ bool parser::parse(std::vector<std::string> args)
             if (key == "")
             {
                 std::cerr << "error: unknown parameter " << current << std::endl;
+                if (auto_help_enabled)
+                {
+                    print_help_and_exit();
+                }
                 return false;
             }
             parameter* p_parameter = parameters[key];
@@ -112,6 +119,10 @@ bool parser::parse(std::vector<std::string> args)
                 if (i >= args.size() || args[i][0] == '-')
                 {
                     std::cerr << "error: parameter " << current << " requires a value" << std::endl;
+                    if (auto_help_enabled)
+                    {
+                        print_help_and_exit();
+                    }
                     return false;
                 }
                 p_parameter->set(args[i]);
@@ -119,9 +130,20 @@ bool parser::parse(std::vector<std::string> args)
         }
         else 
         {
+            if (auto_help_enabled)
+            {
+                print_help_and_exit();
+            }
             return false;
         }
     }
+    
+    // Check if help was requested after successful parsing
+    if (auto_help_enabled && is_help_requested())
+    {
+        print_help_and_exit();
+    }
+    
     return true;
 }
 
@@ -172,4 +194,30 @@ bool parser::get_parameter_value_to(std::string flag, void* value_buf)
     }
     p_parameter->get_value_to(value_buf);
     return true;
+}
+
+void parser::set_auto_help(bool enable)
+{
+    auto_help_enabled = enable;
+}
+
+bool parser::is_help_requested()
+{
+    // Check if help parameter exists and is set
+    bool help_value = false;
+    if (get_parameter_value_to("h", &help_value) && help_value)
+    {
+        return true;
+    }
+    if (get_parameter_value_to("help", &help_value) && help_value)
+    {
+        return true;
+    }
+    return false;
+}
+
+void parser::print_help_and_exit()
+{
+    std::cout << get_help_message() << std::endl;
+    exit(0);
 }

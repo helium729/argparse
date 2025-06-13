@@ -22,6 +22,8 @@ namespace argparse
 
         bool get_parameter_value_to(std::string flag, void* value_buf);
 
+        // Auto-help configuration
+        void set_auto_help(bool enable);
 
     private:
         std::map<std::string, parameter*> parameters;
@@ -29,6 +31,12 @@ namespace argparse
 
         std::map<std::string, std::string> short_name_query;
         std::map<std::string, std::string> name_query;
+
+        bool auto_help_enabled;
+
+        // Helper methods for auto-help
+        bool is_help_requested();
+        void print_help_and_exit();
 
     };
 }
