@@ -48,6 +48,10 @@ add_executable(test_integration tests/test_integration.cc)
 target_link_libraries(test_integration argparse test_framework)
 add_test(NAME test_integration COMMAND test_integration)
 
+add_executable(test_auto_help tests/test_auto_help.cc)
+target_link_libraries(test_auto_help argparse test_framework)
+add_test(NAME test_auto_help COMMAND test_auto_help)
+
 # Add test runner
 add_executable(test_runner tests/test_runner.cc)
 target_link_libraries(test_runner test_framework)
@@ -55,7 +59,7 @@ target_link_libraries(test_runner test_framework)
 # Add a custom target to run all tests
 add_custom_target(run_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --verbose
-    DEPENDS test_parser test_parameters test_util test_integration
+    DEPENDS test_parser test_parameters test_util test_integration test_auto_help
     COMMENT "Running all tests"
 )
 
