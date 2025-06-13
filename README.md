@@ -30,7 +30,7 @@ For other platforms, the library can be compiled using CMake and corresponding b
 
 ## Testing
 
-The library includes a comprehensive test suite with 44 test cases covering all functionality:
+The library includes a comprehensive test suite with 51 test cases covering all functionality:
 
 ### Running Tests
 
@@ -48,6 +48,7 @@ make run_tests
 ./test_parameters  # Parameter type tests (12 tests)
 ./test_util        # Utility function tests (8 tests)
 ./test_integration # Integration tests (7 tests)
+./test_auto_help   # Auto-help feature tests (7 tests)
 ```
 
 ### Test Coverage
@@ -58,12 +59,21 @@ The test suite covers:
 - **Parameter Tests**: All parameter types (NONE, INTEGER, STRING, FLOAT), required parameters, edge cases
 - **Utility Tests**: Parameter factory functions, memory management, default behaviors
 - **Integration Tests**: Complex real-world scenarios, mixed parameter usage, comprehensive error handling
+- **Auto-Help Tests**: Automatic help display, backward compatibility, configuration options
 
 All tests pass with 100% success rate, ensuring reliable functionality across all supported use cases.
 
 ## Usage
 
-### Basic Example
+### Auto-Help Feature (Default Behavior)
+
+The library now includes automatic help handling enabled by default. This provides a simplified, more user-friendly experience:
+
+- **Automatic help display**: When `-h` or `--help` is provided, help is automatically printed and the program exits
+- **Automatic error handling**: When parsing fails (unknown parameters, missing values, etc.), an error message and help are automatically displayed, then the program exits
+- **Zero boilerplate**: No manual help checking or error handling required
+
+#### Simple Auto-Help Example
 
 ```cpp
 #include "argparse/parser.h"
@@ -74,12 +84,94 @@ int main(int argc, char** argv) {
     
     // Add parameters
     parser.add_parameter("h", "help", "Show help message", argparse::parameter_type::NONE);
+    parser.add_parameter("f", "file", "Input file path", argparse::parameter_type::STRING);
+    parser.add_parameter("v", "verbose", "Enable verbose output", argparse::parameter_type::NONE);
+    
+    // Parse automatically handles help and errors
+    parser.parse(argc, argv);
+    
+    // Get parameter values (only reached if parsing successful)
+    std::string filename;
+    parser.get_parameter_value_to("file", &filename);
+    
+    bool verbose = false;
+    parser.get_parameter_value_to("verbose", &verbose);
+    
+    // Use parsed values
+    if (verbose) {
+        std::cout << "Processing file: " << filename << std::endl;
+    }
+    
+    return 0;
+}
+```
+
+**Command line behavior:**
+```bash
+$ ./app --help
+Usage: app [options]
+-f, --file    Input file path
+-h, --help    Show help message  
+-v, --verbose Enable verbose output
+
+$ ./app --unknown
+error: unknown parameter unknown
+Usage: app [options]
+-f, --file    Input file path
+-h, --help    Show help message
+-v, --verbose Enable verbose output
+```
+
+### Backward Compatibility
+
+For existing code that needs manual control over help and error handling, use `set_auto_help(false)`:
+
+```cpp
+argparse::parser parser;
+parser.set_auto_help(false);  // Disable auto-help for manual control
+
+// ... add parameters ...
+
+if (!parser.parse(argc, argv)) {
+    std::cerr << "Parse failed!" << std::endl;
+    std::cout << parser.get_help_message() << std::endl;
+    return 1;
+}
+
+// Manual help checking
+bool help = false;
+if (parser.get_parameter_value_to("help", &help) && help) {
+    std::cout << parser.get_help_message() << std::endl;
+    return 0;
+}
+```
+
+### Basic Example
+
+### Basic Example (Legacy Manual Approach)
+
+For comparison, here's how you would handle help manually with `set_auto_help(false)`:
+
+```cpp
+#include "argparse/parser.h"
+#include <iostream>
+
+int main(int argc, char** argv) {
+    argparse::parser parser;
+    parser.set_auto_help(false);  // Disable auto-help for manual control
+    
+    // Add parameters
+    parser.add_parameter("h", "help", "Show help message", argparse::parameter_type::NONE);
     parser.add_parameter("v", "verbose", "Enable verbose output", argparse::parameter_type::NONE);
     parser.add_parameter("f", "file", "Input file path", argparse::parameter_type::STRING);
     parser.add_parameter("n", "number", "Number of iterations", argparse::parameter_type::INTEGER);
     
     // Parse command line
-    parser.parse(argc, argv);
+    if (!parser.parse(argc, argv)) {
+        std::cerr << "Failed to parse arguments!" << std::endl;
+        std::cout << parser.get_help_message() << std::endl;
+        return 1;
+    }
     
     // Check for help
     bool help = false;
@@ -116,7 +208,13 @@ int main(int argc, char** argv) {
 
 ### Additional Examples
 
-See `example/src/example.cc` for a basic usage example, or refer to the comprehensive test suite in the `tests/` directory for advanced usage patterns.
+The `example/` directory contains demonstration programs:
+
+- `example_auto_help.cc`: Shows the new default auto-help behavior  
+- `example_manual_help.cc`: Shows backward-compatible manual help handling
+- Basic usage patterns can also be found in `example/src/example.cc`
+
+For comprehensive usage patterns, refer to the test suite in the `tests/` directory.
 
 For more complex usage examples, see main.cc in [scatk](https://github.com/helium729/scatk).
 
