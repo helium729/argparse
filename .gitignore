@@ -34,3 +34,7 @@
 # Build directory
 build/
 test/
+
+# Examples
+example/example
+example/bin/

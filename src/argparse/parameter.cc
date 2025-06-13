@@ -8,6 +8,7 @@ parameter::parameter(std::string short_name, std::string name, std::string descr
     this->name = name;
     this->description = description;
     this->type = type;
+    this->required = false; // Initialize required field
 }
 
 parameter::~parameter()
