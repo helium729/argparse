@@ -138,24 +138,33 @@ bool parser::parse(int argc, char** argv)
 bool parser::get_parameter_value_to(std::string flag, void* value_buf)
 {
     std::string key = "";
-    bool short_name = true;
+    
+    // Handle flags with dashes
     if (flag[0] == '-')
     {
         flag = flag.substr(1);
         if (flag[0] == '-')
         {
-            short_name = false;
+            // Long name (--flag)
             flag = flag.substr(1);
+            key = name_query[flag];
         }
-    }
-    if (short_name)
-    {
-        key = short_name_query[flag];
+        else
+        {
+            // Short name (-f)
+            key = short_name_query[flag];
+        }
     }
     else
     {
-        key = name_query[flag];
+        // No dashes - try short name first, then long name
+        key = short_name_query[flag];
+        if (key == "")
+        {
+            key = name_query[flag];
+        }
     }
+    
     parameter* p_parameter = parameters[key];
     if (p_parameter == nullptr)
     {
