@@ -1,4 +1,5 @@
 #include "argparse/util.h"
+#include "argparse/parameter_bool.h"
 
 using namespace argparse;
 
@@ -14,6 +15,8 @@ parameter* util::create_parameter(std::string short_name, std::string name, std:
         return new parameter_string(short_name, name, description);
     case parameter_type::FLOAT:
         return new parameter_float(short_name, name, description);
+    case parameter_type::BOOL:
+        return new parameter_bool(short_name, name, description);
     default:
         std::cerr << "Unknown parameter type: " << type << std::endl;
         return nullptr;

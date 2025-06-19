@@ -7,7 +7,7 @@ namespace argparse
 {
     enum parameter_type
     {
-        NONE, INTEGER, STRING, FLOAT
+        NONE, INTEGER, STRING, FLOAT, BOOL
     };
 
     class parameter
