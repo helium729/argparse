@@ -9,6 +9,7 @@
 #include "argparse/parameter_integer.h"
 #include "argparse/parameter_string.h"
 #include "argparse/parameter_float.h"
+#include "argparse/parameter_bool.h"
 
 namespace argparse
 {

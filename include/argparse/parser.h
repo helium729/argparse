@@ -14,6 +14,7 @@ namespace argparse
         virtual ~parser();
 
         void add_parameter(std::string short_name, std::string name, std::string description, parameter_type type=NONE, bool required=false, std::string default_value=std::string(""));
+        void add_bool(std::string short_name, std::string name, std::string description, bool required = false, bool default_value = false);
 
         std::string get_help_message();
 

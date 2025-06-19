@@ -40,6 +40,22 @@ void argparse::parser::add_parameter(std::string short_name, std::string name, s
     }
 }
 
+void parser::add_bool(std::string short_name, std::string name, std::string description, bool required, bool default_value) {
+    parameter* p_parameter = util::create_parameter(short_name, name, description, parameter_type::BOOL);
+    if (p_parameter != nullptr) {
+        p_parameter->set(default_value ? "true" : "false");
+        p_parameter->set_required(required);
+        std::string key = short_name + "::" + name;
+        parameters[key] = p_parameter;
+        if (short_name != "") {
+            short_name_query[short_name] = key;
+        }
+        if (name != "") {
+            name_query[name] = key;
+        }
+    }
+}
+
 std::string argparse::parser::get_help_message()
 {
     std::string help_message = "";
