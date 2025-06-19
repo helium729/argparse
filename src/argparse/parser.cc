@@ -45,7 +45,7 @@ void parser::add_bool(std::string short_name, std::string name, std::string desc
     if (p_parameter != nullptr) {
         p_parameter->set(default_value ? "true" : "false");
         p_parameter->set_required(required);
-        std::string key = short_name + '\n' + name;
+        std::string key = short_name + "::" + name;
         parameters[key] = p_parameter;
         if (short_name != "") {
             short_name_query[short_name] = key;
